@@ -35,6 +35,10 @@ public class UserController {
             throw new IllegalArgumentException("Username already exists");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // По умолчанию роль USER, если не указана
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("USER");
+        }
         return userRepository.save(user);
     }
 

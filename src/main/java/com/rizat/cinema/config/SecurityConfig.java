@@ -35,7 +35,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/users/register", "/api/users/login").permitAll()
-                        .requestMatchers("/api/films", "/api/sessions").permitAll()
+                        .requestMatchers("/api/films").hasRole("ADMIN") // Только ADMIN может создавать/обновлять/удалять
+                        .requestMatchers("/api/films/**").hasAnyRole("USER", "ADMIN") // USER и ADMIN могут просматривать
+                        .requestMatchers("/api/sessions").hasRole("ADMIN")
+                        .requestMatchers("/api/sessions/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/bookings/**").authenticated()
                         .anyRequest().authenticated()
                 )
@@ -54,7 +57,7 @@ public class SecurityConfig {
             return org.springframework.security.core.userdetails.User
                     .withUsername(user.getUsername())
                     .password(user.getPassword())
-                    .roles("USER")
+                    .roles(user.getRole())
                     .build();
         };
     }

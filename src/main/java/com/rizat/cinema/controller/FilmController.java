@@ -36,4 +36,24 @@ public class FilmController {
     public Film createFilm(@RequestBody Film film) {
         return filmService.createFilm(film);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Film> updateFilm(@PathVariable Long id, @RequestBody Film film) {
+        try {
+            Film updatedFilm = filmService.updateFilm(id, film);
+            return ResponseEntity.ok(updatedFilm);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFilm(@PathVariable Long id) {
+        try {
+            filmService.deleteFilm(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
