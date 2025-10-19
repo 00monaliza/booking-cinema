@@ -19,4 +19,8 @@ public class User {
 
     @Column(nullable = false)
     private String email;
+
+    public String getUsername() {
+        return null;
+    }
 }

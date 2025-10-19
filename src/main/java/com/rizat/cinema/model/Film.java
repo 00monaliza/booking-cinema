@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Entity
 @Table(name = "films")
-@Data // Генерирует геттеры, сеттеры, toString, equals, hashCode
+@Data
 public class Film {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,5 +18,5 @@ public class Film {
     private String genre;
 
     @Column(nullable = false)
-    private int duration; // Длительность в минутах
+    private int duration;
 }
