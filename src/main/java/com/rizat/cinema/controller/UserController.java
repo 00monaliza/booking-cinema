@@ -3,6 +3,7 @@ package com.rizat.cinema.controller;
 import com.rizat.cinema.config.JwtUtil;
 import com.rizat.cinema.model.User;
 import com.rizat.cinema.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,12 +31,11 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User registerUser(@RequestBody User user) {
+    public User registerUser(@Valid @RequestBody User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Username already exists");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // По умолчанию роль USER, если не указана
         if (user.getRole() == null || user.getRole().isEmpty()) {
             user.setRole("USER");
         }

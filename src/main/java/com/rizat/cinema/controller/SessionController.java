@@ -2,11 +2,13 @@ package com.rizat.cinema.controller;
 
 import com.rizat.cinema.model.Session;
 import com.rizat.cinema.service.SessionService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/sessions")
@@ -25,12 +27,12 @@ public class SessionController {
     }
 
     @GetMapping("/film/{filmId}")
-    public List<Session> getSessionsByFilm(@PathVariable Long filmId) {
-        return sessionService.getSessionsByFilmIdAndTime(filmId, LocalDateTime.now());
+    public List<Session> getSessionsByFilmId(@PathVariable Long filmId) {
+        return sessionService.getSessionsByFilmId(filmId);
     }
 
     @PostMapping
-    public Session createSession(@RequestBody Session session) {
+    public Session createSession(@Valid @RequestBody Session session) {
         return sessionService.createSession(session);
     }
 }
