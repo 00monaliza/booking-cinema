@@ -42,6 +42,10 @@ public class SessionService {
         return sessionRepository.findAll();
     }
 
+    public List<Session> getSessionsByFilmId(Long filmId) {
+        return sessionRepository.findByFilmIdAndStartTimeAfter(filmId, LocalDateTime.now());
+    }
+
     public List<Session> getSessionsByFilmIdAndTime(Long filmId, LocalDateTime startTime) {
         return sessionRepository.findByFilmIdAndStartTimeAfter(filmId, startTime);
     }
