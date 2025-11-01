@@ -6,6 +6,7 @@ C:\Users\kabdy\IdeaProjects\cinema-booking\src\main\java\com\rizat\cinema\contro
 C:\Users\kabdy\IdeaProjects\cinema-booking\src\main\java\com\rizat\cinema\controller\FilmController.java
 C:\Users\kabdy\IdeaProjects\cinema-booking\src\main\java\com\rizat\cinema\controller\SessionController.java
 C:\Users\kabdy\IdeaProjects\cinema-booking\src\main\java\com\rizat\cinema\controller\UserController.java
+C:\Users\kabdy\IdeaProjects\cinema-booking\src\main\java\com\rizat\cinema\exception\GlobalExceptionHandler.java
 C:\Users\kabdy\IdeaProjects\cinema-booking\src\main\java\com\rizat\cinema\model\Booking.java
 C:\Users\kabdy\IdeaProjects\cinema-booking\src\main\java\com\rizat\cinema\model\Film.java
 C:\Users\kabdy\IdeaProjects\cinema-booking\src\main\java\com\rizat\cinema\model\Session.java
