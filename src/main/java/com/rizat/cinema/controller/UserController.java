@@ -31,15 +31,27 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User registerUser(@Valid @RequestBody User user) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody User user) {
+        // Проверка существования username
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username already exists");
+            return ResponseEntity.badRequest().body("Username already exists");
         }
+
+        // Проверка существования email
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Email already exists");
+        }
+
+        // Хеширование пароля с помощью BCrypt
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // Установка роли по умолчанию
         if (user.getRole() == null || user.getRole().isEmpty()) {
             user.setRole("USER");
         }
-        return userRepository.save(user);
+
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.ok(savedUser);
     }
 
     @PostMapping("/login")
