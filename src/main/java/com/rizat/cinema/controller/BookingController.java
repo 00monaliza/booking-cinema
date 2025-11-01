@@ -27,6 +27,6 @@ public class BookingController {
 
     @GetMapping("/user/{userId}")
     public List<Booking> getBookingsByUserId(@PathVariable Long userId) {
-        return bookingService.getBookingsByUserId(userId);
+        return bookingService.getUserBookings(userId);
     }
 }

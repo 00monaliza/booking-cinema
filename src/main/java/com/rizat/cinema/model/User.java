@@ -26,6 +26,9 @@ public class User {
     @Column(nullable = false)
     private String email;
 
+    @Column(nullable = true)
+    private String phone;
+
     @NotBlank(message = "Role cannot be empty")
     @Column(nullable = false)
     private String role = "USER"; // По умолчанию USER
