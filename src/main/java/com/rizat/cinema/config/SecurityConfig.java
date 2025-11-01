@@ -34,12 +34,23 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // Разрешаем доступ к статическим ресурсам
+                        .requestMatchers("/", "/*.html", "/css/**", "/js/**", "/images/**").permitAll()
+
+                        // Публичные API endpoints
                         .requestMatchers("/api/users/register", "/api/users/login").permitAll()
-                        .requestMatchers("/api/films").hasRole("ADMIN") // Только ADMIN может создавать/обновлять/удалять
-                        .requestMatchers("/api/films/**").hasAnyRole("USER", "ADMIN") // USER и ADMIN могут просматривать
-                        .requestMatchers("/api/sessions").hasRole("ADMIN")
-                        .requestMatchers("/api/sessions/**").hasAnyRole("USER", "ADMIN")
+
+                        // Фильмы: GET доступен всем, остальные методы - только ADMIN
+                        .requestMatchers("GET", "/api/films", "/api/films/**").permitAll()
+                        .requestMatchers("/api/films", "/api/films/**").hasRole("ADMIN")
+
+                        // Сеансы: GET доступен всем, остальные методы - только ADMIN
+                        .requestMatchers("GET", "/api/sessions", "/api/sessions/**").permitAll()
+                        .requestMatchers("/api/sessions", "/api/sessions/**").hasRole("ADMIN")
+
+                        // Бронирования требуют авторизации
                         .requestMatchers("/api/bookings/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

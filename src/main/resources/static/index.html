@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кинотеатр - Бронирование билетов</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>🎬 Кинотеатр</h1>
+            </div>
+            <div class="nav-menu">
+                <span id="userInfo" class="user-info"></span>
+                <button id="loginBtn" class="btn btn-primary" onclick="location.href='/login.html'">Вход</button>
+                <button id="registerBtn" class="btn btn-secondary" onclick="location.href='/register.html'">Регистрация</button>
+                <button id="adminBtn" class="btn btn-admin" style="display: none;" onclick="location.href='/admin.html'">Админ-панель</button>
+                <button id="logoutBtn" class="btn btn-danger" style="display: none;">Выход</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <h2 class="section-title">Фильмы в прокате</h2>
+        <div id="filmsContainer" class="films-grid">
+            <div class="loading">Загрузка...</div>
+        </div>
+
+        <h2 class="section-title" style="margin-top: 50px;">Расписание сеансов</h2>
+        <div id="sessionsContainer" class="sessions-list">
+            <div class="loading">Загрузка...</div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для бронирования -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Бронирование билета</h2>
+            <div id="bookingInfo"></div>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label for="seatNumber">Номер места:</label>
+                    <input type="number" id="seatNumber" name="seatNumber" min="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Забронировать</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/films.js"></script>
+</body>
+</html>
