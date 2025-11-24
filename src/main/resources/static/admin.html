@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - Кинотеатр</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .admin-container {
+            background: linear-gradient(135deg, #221f1f 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        .admin-header {
+            background: rgba(229, 9, 20, 0.9);
+            color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-header h1 {
+            margin: 0;
+            font-weight: bold;
+        }
+        .admin-nav {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .admin-nav button {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .admin-nav button:hover,
+        .admin-nav button.active {
+            background: #e50914;
+            border-color: #f5a623;
+        }
+        .admin-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: none;
+        }
+        .admin-section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .admin-section h2 {
+            color: #e50914;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e50914;
+            padding-bottom: 10px;
+        }
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .form-section h3 {
+            color: #221f1f;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            color: #221f1f;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .btn-add {
+            background: #e50914;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-add:hover {
+            background: #c40812;
+            transform: translateY(-2px);
+        }
+        .films-list,
+        .sessions-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .film-item,
+        .session-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #e50914;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .item-info {
+            flex: 1;
+        }
+        .item-info h4 {
+            color: #221f1f;
+            margin: 0;
+        }
+        .item-info p {
+            color: #666;
+            margin: 5px 0 0 0;
+            font-size: 14px;
+        }
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: 10px;
+        }
+        .btn-delete:hover {
+            background: #c82333;
+        }
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border: 2px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover {
+            background: #e50914;
+        }
+        .error-message,
+        .success-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .no-access {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            color: #dc3545;
+        }
+        .no-access h2 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="container">
+            <div class="admin-header">
+                <div>
+                    <h1>👑 Админ-панель</h1>
+                    <p>Добро пожаловать, <span id="adminUsername"></span></p>
+                </div>
+                <button class="logout-btn" onclick="logout()">Выход</button>
+            </div>
+
+            <div id="noAccessDiv" class="no-access" style="display: none;">
+                <h2>❌ Доступ запрещен</h2>
+                <p>Эта страница доступна только администраторам.</p>
+                <a href="/" class="btn btn-primary mt-3">Вернуться на главную</a>
+            </div>
+
+            <div id="adminContent" style="display: none;">
+                <div class="admin-nav">
+                    <button class="nav-btn active" onclick="showSection('films')">🎬 Фильмы</button>
+                    <button class="nav-btn" onclick="showSection('sessions')">📅 Сеансы</button>
+                </div>
+
+                <!-- Фильмы -->
+                <div id="films" class="admin-section active">
+                    <h2>🎬 Управление фильмами</h2>
+                    
+                    <div id="errorFilms" class="error-message"></div>
+                    <div id="successFilms" class="success-message"></div>
+
+                    <div class="form-section">
+                        <h3>Добавить новый фильм</h3>
+                        <form id="filmForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label for="filmTitle">Название</label>
+                                <input type="text" id="filmTitle" required placeholder="Название фильма">
+                            </div>
+                            <div class="form-group">
+                                <label for="filmGenre">Жанр</label>
+                                <input type="text" id="filmGenre" required placeholder="Жанр">
+                            </div>
+                            <div class="form-group">
+                                <label for="filmDuration">Длительность (мин)</label>
+                                <input type="number" id="filmDuration" required placeholder="Длительность в минутах">
+                            </div>
+                            <div style="display: flex; align-items: flex-end;">
+                                <button type="submit" class="btn-add" style="width: 100%;">Добавить фильм</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="films-list" id="filmsList">
+                        <p style="text-align: center; color: #999;">Загрузка фильмов...</p>
+                    </div>
+                </div>
+
+                <!-- Сеансы -->
+                <div id="sessions" class="admin-section">
+                    <h2>📅 Управление сеансами</h2>
+                    
+                    <div id="errorSessions" class="error-message"></div>
+                    <div id="successSessions" class="success-message"></div>
+
+                    <div class="form-section">
+                        <h3>Создать новый сеанс</h3>
+                        <form id="sessionForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label for="sessionFilmId">Фильм</label>
+                                <select id="sessionFilmId" required>
+                                    <option value="">Выберите фильм...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sessionStartTime">Время начала</label>
+                                <input type="datetime-local" id="sessionStartTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sessionHall">Зал</label>
+                                <input type="text" id="sessionHall" required placeholder="Номер зала (например, Hall A)">
+                            </div>
+                            <div class="form-group">
+                                <label for="sessionSeats">Количество мест</label>
+                                <input type="number" id="sessionSeats" required placeholder="Количество мест" value="100">
+                            </div>
+                            <div style="display: flex; align-items: flex-end; grid-column: 1 / -1;">
+                                <button type="submit" class="btn-add" style="width: 100%;">Создать сеанс</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="sessions-list" id="sessionsList">
+                        <p style="text-align: center; color: #999;">Загрузка сеансов...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/v1';
+        const USERS_API = '/api/users';
+
+        // Проверка авторизации и прав
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('jwtToken');
+            const role = localStorage.getItem('role');
+            const username = localStorage.getItem('username');
+
+            if (!token || role !== 'ADMIN') {
+                document.getElementById('noAccessDiv').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('adminContent').style.display = 'block';
+            document.getElementById('adminUsername').textContent = username;
+
+            loadFilms();
+            loadSessions();
+            loadFilmsForSessionForm();
+
+            // Обработчики форм
+            document.getElementById('filmForm').addEventListener('submit', addFilm);
+            document.getElementById('sessionForm').addEventListener('submit', addSession);
+        });
+
+        function showSection(sectionId) {
+            // Скрыть все секции
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Показать выбранную секцию
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+            };
+        }
+
+        async function loadFilms() {
+            try {
+                const response = await fetch(`${API_BASE}/films`, {
+                    headers: getHeaders()
+                });
+                const films = await response.json();
+
+                const filmsList = document.getElementById('filmsList');
+                if (films.length === 0) {
+                    filmsList.innerHTML = '<p style="text-align: center; color: #999;">Нет фильмов</p>';
+                    return;
+                }
+
+                filmsList.innerHTML = films.map(film => `
+                    <div class="film-item">
+                        <div class="item-info">
+                            <h4>${film.title}</h4>
+                            <p>${film.genre} • ${film.duration} мин</p>
+                        </div>
+                        <button class="btn-delete" onclick="deleteFilm(${film.id})">Удалить</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading films:', error);
+                document.getElementById('errorFilms').textContent = 'Ошибка загрузки фильмов';
+                document.getElementById('errorFilms').style.display = 'block';
+            }
+        }
+
+        async function loadSessions() {
+            try {
+                const response = await fetch(`${API_BASE}/sessions`, {
+                    headers: getHeaders()
+                });
+                const sessions = await response.json();
+
+                const sessionsList = document.getElementById('sessionsList');
+                if (sessions.length === 0) {
+                    sessionsList.innerHTML = '<p style="text-align: center; color: #999;">Нет сеансов</p>';
+                    return;
+                }
+
+                sessionsList.innerHTML = sessions.map(session => `
+                    <div class="session-item">
+                        <div class="item-info">
+                            <h4>Фильм #${session.film.id} • ${session.hall}</h4>
+                            <p>Время: ${new Date(session.startTime).toLocaleString('ru-RU')}</p>
+                            <p>Свободных мест: ${session.availableSeats}/${session.totalSeats}</p>
+                        </div>
+                        <button class="btn-delete" onclick="deleteSession(${session.id})">Удалить</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+                document.getElementById('errorSessions').textContent = 'Ошибка загрузки сеансов';
+                document.getElementById('errorSessions').style.display = 'block';
+            }
+        }
+
+        async function loadFilmsForSessionForm() {
+            try {
+                const response = await fetch(`${API_BASE}/films`, {
+                    headers: getHeaders()
+                });
+                const films = await response.json();
+
+                const select = document.getElementById('sessionFilmId');
+                select.innerHTML = '<option value="">Выберите фильм...</option>';
+                films.forEach(film => {
+                    select.innerHTML += `<option value="${film.id}">${film.title}</option>`;
+                });
+            } catch (error) {
+                console.error('Error loading films for session form:', error);
+            }
+        }
+
+        async function addFilm(e) {
+            e.preventDefault();
+
+            const film = {
+                title: document.getElementById('filmTitle').value,
+                genre: document.getElementById('filmGenre').value,
+                duration: parseInt(document.getElementById('filmDuration').value)
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/films`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(film)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка добавления фильма');
+                }
+
+                document.getElementById('filmForm').reset();
+                document.getElementById('successFilms').textContent = 'Фильм добавлен успешно!';
+                document.getElementById('successFilms').style.display = 'block';
+
+                setTimeout(() => {
+                    document.getElementById('successFilms').style.display = 'none';
+                }, 3000);
+
+                loadFilms();
+                loadFilmsForSessionForm();
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('errorFilms').textContent = error.message;
+                document.getElementById('errorFilms').style.display = 'block';
+            }
+        }
+
+        async function addSession(e) {
+            e.preventDefault();
+
+            const session = {
+                film: { id: parseInt(document.getElementById('sessionFilmId').value) },
+                startTime: document.getElementById('sessionStartTime').value,
+                hall: document.getElementById('sessionHall').value,
+                totalSeats: parseInt(document.getElementById('sessionSeats').value),
+                availableSeats: parseInt(document.getElementById('sessionSeats').value)
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/sessions`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(session)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка создания сеанса');
+                }
+
+                document.getElementById('sessionForm').reset();
+                document.getElementById('successSessions').textContent = 'Сеанс создан успешно!';
+                document.getElementById('successSessions').style.display = 'block';
+
+                setTimeout(() => {
+                    document.getElementById('successSessions').style.display = 'none';
+                }, 3000);
+
+                loadSessions();
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('errorSessions').textContent = error.message;
+                document.getElementById('errorSessions').style.display = 'block';
+            }
+        }
+
+        async function deleteFilm(id) {
+            if (!confirm('Вы уверены, что хотите удалить фильм?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/films/${id}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка удаления фильма');
+                }
+
+                loadFilms();
+                loadFilmsForSessionForm();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Ошибка при удалении фильма');
+            }
+        }
+
+        async function deleteSession(id) {
+            if (!confirm('Вы уверены, что хотите удалить сеанс?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/sessions/${id}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка удаления сеанса');
+                }
+
+                loadSessions();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Ошибка при удалении сеанса');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.href = '/';
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer style="background: linear-gradient(135deg, #221f1f 0%, #1a1a1a 100%); color: white; padding: 30px 0; margin-top: 60px; border-top: 3px solid #e50914;">
+        <div class="container">
+            <div style="text-align: center; color: #999;">
+                <p style="margin: 10px 0; font-size: 14px;"><strong style="color: #e50914;">Кинотеатр Online</strong> • Все права защищены &copy; 2024</p>
+                <p style="margin: 8px 0 0 0; font-size: 13px;">☎️ +7 (776) 115-03-02 • 📍 Мангилик Ел 51/5</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кинотеатр - Бронирование билетов онлайн</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .navbar {
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.95) 0%, rgba(244, 166, 35, 0.9) 100%) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            padding: 15px 0;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 26px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn-nav {
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .btn-login {
+            background: white;
+            color: #e50914;
+        }
+        .btn-login:hover {
+            background: #f5a623;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-register {
+            background: white;
+            color: #e50914;
+        }
+        .btn-register:hover {
+            background: #e50914;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-logout {
+            background: white;
+            color: #e50914;
+        }
+        .btn-logout:hover {
+            background: #dc3545;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .btn-admin {
+            background: #ffc107;
+            color: #221f1f;
+        }
+        .btn-admin:hover {
+            background: #ffb300;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+        }
+        .btn-tickets {
+            background: #28a745;
+            color: white;
+        }
+        .btn-tickets:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        .user-info {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .hero {
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.85) 0%, rgba(34, 31, 31, 0.95) 100%), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><pattern id="film" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><rect x="10" y="20" width="80" height="60" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/><circle cx="50" cy="50" r="3" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="1200" height="600" fill="url(%23film)"/></svg>');
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(244, 166, 35, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(229, 9, 20, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        .hero h1 {
+            font-size: 56px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            animation: slideDown 0.8s ease-out;
+        }
+        .hero .lead {
+            font-size: 22px;
+            margin-bottom: 25px;
+            opacity: 0.95;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .hero .features {
+            font-size: 16px;
+            margin-top: 15px;
+            opacity: 0.9;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 35px;
+        }
+        .films-section {
+            padding: 60px 0;
+            background: #f5f5f5;
+        }
+        .section-title {
+            text-align: center;
+            color: #e50914;
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: #f5a623;
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+        .features-section {
+            padding: 60px 0;
+            background: white;
+        }
+        .feature-card {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.05) 0%, rgba(244, 166, 35, 0.05) 100%);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: #e50914;
+            box-shadow: 0 10px 25px rgba(229, 9, 20, 0.1);
+        }
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .feature-card h4 {
+            color: #e50914;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .feature-card p {
+            color: #666;
+            font-size: 15px;
+        }
+        .cta-button {
+            background: #f5a623;
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .cta-button:hover {
+            background: #e50914;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(229, 9, 20, 0.3);
+        }
+        .cta-button:active {
+            transform: translateY(-1px);
+        }
+        .film-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            height: 100%;
+        }
+        .film-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(229, 9, 20, 0.2);
+        }
+        .film-header {
+            background: linear-gradient(135deg, #e50914, #f5a623);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .film-header h3 {
+            margin: 0;
+            font-weight: bold;
+        }
+        .film-body {
+            padding: 20px;
+        }
+        .film-body p {
+            color: #666;
+            margin: 10px 0;
+        }
+        .film-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn-book {
+            flex: 1;
+            background: #e50914;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-book:hover {
+            background: #c40812;
+        }
+        .btn-book:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .no-auth-message {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .no-auth-message p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигационная панель -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">🎬 Кинотеатр Online</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#filmsSection" style="color: white; font-weight: 500;">Фильмы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#featuresSection" style="color: white; font-weight: 500;">О нас</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Блок авторизации -->
+    <div class="navbar" style="background: rgba(229, 9, 20, 0.95) !important; padding: 8px 0;">
+        <div class="container">
+            <div class="ms-auto auth-buttons" id="authButtons">
+                <a href="/login.html" class="btn-nav btn-login">🔐 Вход</a>
+                <a href="/register.html" class="btn-nav btn-register">✍️ Регистрация</a>
+            </div>
+            <div class="ms-auto auth-buttons" id="authButtonsLogged" style="display: none;">
+                <span class="user-info">👤 <span id="username"></span></span>
+                <a href="/booking.html" class="btn-nav btn-tickets">🎟️ Забронировать</a>
+                <a href="/bookings.html" class="btn-nav btn-tickets">📱 Мои билеты</a>
+                <a href="/admin.html" class="btn-nav btn-admin" id="adminLink" style="display: none;">⚙️ Админ</a>
+                <button class="btn-nav btn-logout" onclick="logout()">🚪 Выход</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Героический раздел -->
+    <div class="hero">
+        <div class="hero-content container">
+            <h1>🎭 Добро пожаловать в Кинотеатр!</h1>
+            <p class="lead">Забронируйте билеты онлайн на лучшие фильмы</p>
+            <p class="features">✨ Удобное бронирование • 🎬 Новинки кино • 🍿 Комфортные залы</p>
+            
+            <div class="cta-buttons">
+                <button class="cta-button" onclick="bookingAction()">🎟️ Забронировать билет</button>
+                <button class="cta-button" onclick="scrollToFilms()" style="background: transparent; border: 2px solid white; color: white;">📋 Смотреть афишу</button>
+            </div>
+
+            <div id="welcomeMessage" style="margin-top: 30px; display: none;">
+                <p style="font-size: 18px; font-weight: 600; margin: 0;">
+                    Добро пожаловать, <span id="welcomeUsername"></span>!
+                    <span id="adminBadge" style="display: none; background: #f5a623; color: #221f1f; padding: 6px 16px; border-radius: 20px; margin-left: 15px; font-size: 14px;">
+                        👑 Администратор
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Раздел возможностей -->
+    <div class="features-section" id="featuresSection">
+        <div class="container">
+            <h2 class="section-title">✨ Почему выбирают нас</h2>
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎫</div>
+                        <h4>Быстрое бронирование</h4>
+                        <p>Забронируйте билеты в несколько кликов за 1-2 минуты</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">🛡️</div>
+                        <h4>Безопасно</h4>
+                        <p>Защищённые платежи и надёжное хранение ваших данных</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h4>История билетов</h4>
+                        <p>Просмотрите и управляйте всеми своими бронированиями</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">⭐</div>
+                        <h4>Высокие рейтинги</h4>
+                        <p>Смотрите рейтинги фильмов и выбирайте лучшие</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Раздел фильмов -->
+    <div class="films-section" id="filmsSection">
+        <div class="container">
+            <h2 class="section-title">🎬 Фильмы в прокате</h2>
+
+            <div id="noAuthMessage" class="no-auth-message" style="display: none;">
+                <h4 style="color: #e50914; margin-bottom: 15px;">🔐 Требуется авторизация</h4>
+                <p style="font-size: 16px; margin-bottom: 20px;">Для просмотра фильмов и бронирования билетов необходимо войти в систему</p>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <a href="/login.html" class="cta-button">🔐 Войти</a>
+                    <a href="/register.html" class="cta-button" style="background: transparent; border: 2px solid #e50914; color: #e50914;">✍️ Регистрация</a>
+                </div>
+            </div>
+
+            <div id="filmsContainer" class="row g-4">
+                <div class="loading">
+                    <p>⏳ Загрузка фильмов...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: linear-gradient(135deg, #221f1f 0%, #1a1a1a 100%); color: white; padding: 50px 0 20px; margin-top: 80px; border-top: 3px solid #e50914;">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 style="color: #f5a623; margin-bottom: 15px;">🎬 О кинотеатре</h5>
+                    <p style="color: #ccc; line-height: 1.6;">Лучший кинотеатр в городе с комфортными залами, полным спектром услуг и свежайшим контентом. Присоединяйтесь к нам!</p>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 style="color: #f5a623; margin-bottom: 15px;">📞 Контакты</h5>
+                    <p style="color: #ccc; line-height: 1.6;">
+                        ☎️ Телефон: <strong>+7 (776) 115-03-02</strong><br>
+                        📍 Адрес: <strong>Мангилик Ел, 51/5</strong><br>
+                        📧 Email: <strong>info@cinema.kz</strong>
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h5 style="color: #f5a623; margin-bottom: 15px;">🕐 Режим работы</h5>
+                    <p style="color: #ccc; line-height: 1.6;">
+                        📅 Пн-Чт: <strong>10:00 - 23:00</strong><br>
+                        📅 Пт-Сб: <strong>10:00 - 00:00</strong><br>
+                        📅 Вс: <strong>10:00 - 22:00</strong>
+                    </p>
+                </div>
+            </div>
+            <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 30px 0;">
+            <div style="text-align: center; color: #999;">
+                <p style="margin: 0; font-size: 14px;">&copy; 2024 <strong style="color: #e50914;">Кинотеатр Online</strong> • Все права защищены</p>
+                <p style="margin: 8px 0 0 0; font-size: 12px;">Разработано с ❤️ для вашего комфорта • 📍 Мангилик Ел 51/5 • ☎️ +7 (776) 115-03-02</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = '/api/v1';
+
+        // Проверка авторизации при загрузке
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuthentication();
+            loadFilms();
+        });
+
+        function checkAuthentication() {
+            const token = localStorage.getItem('jwtToken');
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+
+            if (token && username) {
+                // Показать авторизованное меню
+                document.getElementById('authButtons').style.display = 'none';
+                document.getElementById('authButtonsLogged').style.display = 'flex';
+                document.getElementById('username').textContent = username;
+
+                // Показать приветствие
+                document.getElementById('welcomeMessage').style.display = 'block';
+                document.getElementById('welcomeUsername').textContent = username;
+
+                // Настройки для админа
+                if (role === 'ADMIN') {
+                    document.getElementById('adminLink').style.display = 'inline-block';
+                    document.getElementById('adminBadge').style.display = 'inline-block';
+                }
+
+                document.getElementById('noAuthMessage').style.display = 'none';
+            } else {
+                // Показать гостевое меню - но фильмы видны всем!
+                document.getElementById('authButtons').style.display = 'flex';
+                document.getElementById('authButtonsLogged').style.display = 'none';
+                document.getElementById('welcomeMessage').style.display = 'none';
+                document.getElementById('noAuthMessage').style.display = 'none';  // Скроем сообщение об авторизации
+            }
+        }
+
+        function getHeaders() {
+            const token = localStorage.getItem('jwtToken');
+            return {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+            };
+        }
+
+        async function loadFilms() {
+            const token = localStorage.getItem('jwtToken');
+
+            if (!token) {
+                // Не авторизован - показываем сообщение
+                document.getElementById('filmsContainer').innerHTML = '';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/films`, {
+                    headers: getHeaders()
+                });
+
+                if (response.status === 401) {
+                    console.log('Not authenticated or token expired');
+                    // Проверяем заголовки на истечение токена
+                    if (response.headers.get('X-Token-Expired') === 'true') {
+                        alert('Ваша сессия истекла. Пожалуйста, войдите снова.');
+                        logout();
+                    }
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error('Failed to load films');
+                }
+
+                const data = await response.json();
+
+                // Проверяем формат ответа (может быть массив или объект Page)
+                const films = Array.isArray(data) ? data : (data.content || []);
+                renderFilms(films);
+            } catch (error) {
+                console.error('Error loading films:', error);
+                document.getElementById('filmsContainer').innerHTML =
+                    '<div class="col-12"><p style="text-align: center; color: red;">❌ Ошибка загрузки фильмов. Попробуйте позже.</p></div>';
+            }
+        }
+
+        function renderFilms(films) {
+            const container = document.getElementById('filmsContainer');
+
+            if (!films || films.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div style="text-align: center; padding: 40px; background: white; border-radius: 10px;">
+                            <h3 style="color: #666;">🎬 Нет доступных фильмов</h3>
+                            <p style="color: #999;">Скоро появятся новые фильмы!</p>
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = films.map(film => `
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                    <div class="film-card">
+                        <div class="film-header">
+                            <h3>${escapeHtml(film.title)}</h3>
+                            ${film.rating ? `<p style="margin: 8px 0 0 0; font-size: 14px;">⭐ ${film.rating.toFixed(1)}</p>` : ''}
+                        </div>
+                        <div class="film-body">
+                            <p><strong>🎭 Жанр:</strong> ${escapeHtml(film.genre)}</p>
+                            <p><strong>⏱️ Длительность:</strong> ${film.duration} мин</p>
+                            <div class="film-actions">
+                                <button class="btn-book" onclick="viewSessions(${film.id})"
+                                    ${!localStorage.getItem('jwtToken') ? 'disabled' : ''}>
+                                    🎟️ Забронировать
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function viewSessions(filmId) {
+            if (!localStorage.getItem('jwtToken')) {
+                alert('🔐 Пожалуйста, войдите в систему для бронирования');
+                window.location.href = '/login.html';
+                return;
+            }
+            window.location.href = '/booking.html';
+        }
+
+        function scrollToFilms() {
+            document.getElementById('filmsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function logout() {
+            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.href = '/';
+        }
+
+        function bookingAction() {
+            if (!localStorage.getItem('jwtToken')) {
+                window.location.href = '/login.html';
+                return;
+            }
+            window.location.href = '/booking.html';
+        }
+    </script>
+</body>
+</html>

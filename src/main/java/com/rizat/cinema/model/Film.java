@@ -11,6 +11,7 @@ public class Film {
     private String title;
     private String genre;
     private int duration; // minutes
+    private Double rating = 0.0;
 
     public Film() {}
 
@@ -18,6 +19,7 @@ public class Film {
         this.title = title;
         this.genre = genre;
         this.duration = duration;
+        this.rating = 0.0;
     }
 
     public Long getId() { return id; }
@@ -28,4 +30,6 @@ public class Film {
     public void setGenre(String genre) { this.genre = genre; }
     public int getDuration() { return duration; }
     public void setDuration(int duration) { this.duration = duration; }
+    public Double getRating() { return rating; }
+    public void setRating(Double rating) { this.rating = rating; }
 }

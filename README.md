@@ -1,54 +1,440 @@
-# 🎬 Cinema Booking System
+# 🎬 Cinema Booking Application
 
-A modern, fully-featured cinema ticket booking application built with **Spring Boot 3.3.4** and **Java 21**.
+Современное веб-приложение для онлайн бронирования билетов в кинотеатр. Полнофункциональная система с публичным доступом к афише фильмов и аутентификацией для сохранения истории бронирований.
 
-## 🌟 Features
+## 📋 Содержание
 
-- ✅ **Modern UI** - Responsive Bootstrap 5 design with cinema-themed styling
-- ✅ **REST API** - Complete RESTful endpoints for films, sessions, and bookings
-- ✅ **Database** - JPA/Hibernate with H2 in-memory database
-- ✅ **Sample Data** - Pre-loaded films and showtimes
-- ✅ **Java 21** - Latest LTS version with improved performance
-- ✅ **Clean Architecture** - Service layer, repositories, and controllers
-- ✅ **CORS Support** - Cross-origin API access enabled
-- ✅ **Logging** - SLF4J + Logback with clean configuration
+- [Особенности](#особенности)
+- [Требования](#требования)
+- [Установка](#установка)
+- [Запуск](#запуск)
+- [Архитектура](#архитектура)
+- [API](#api)
+- [Структура базы данных](#структура-базы-данных)
+- [Аутентификация](#аутентификация)
+- [Развертывание](#развертывание)
 
-## 🚀 Quick Start
+## ✨ Особенности
 
-### Prerequisites
-- Java 21 or higher
-- Maven 3.6+
+### Для пользователей
+- 🎥 **Публичная афиша** - просмотр всех фильмов и сеансов без авторизации
+- 🎫 **Бронирование билетов** - удобный интерфейс выбора мест
+- 📱 **Отзывчивый дизайн** - оптимально работает на всех устройствах
+- 🔐 **Система аккаунтов** - регистрация и вход для сохранения истории
+- 📅 **История бронирований** - просмотр прошлых и будущих бронирований
+- ❌ **Отмена билетов** - возможность отменить бронирование
 
-### Build & Run
+### Для администраторов
+- 👥 **Управление фильмами** - добавление, редактирование, удаление фильмов
+- 🎞️ **Управление сеансами** - создание расписания сеансов
+- 📊 **Просмотр всех бронирований** - отслеживание продаж
+
+## 🛠 Требования
+
+- **Java 21 LTS** или выше
+- **Maven 3.8.1** или выше
+- **Git** для клонирования репозитория
+
+## 📦 Установка
+
+### 1. Клонирование репозитория
 
 ```bash
-# Clone the repository
 git clone https://github.com/00monaliza/booking-cinema.git
 cd booking-cinema
+```
 
-# Build the project
-mvn clean package
+### 2. Проверка версии Java
 
-# Run the application
+```bash
+java -version
+# Должно быть: openjdk 21 или выше
+```
+
+### 3. Построение проекта
+
+```bash
+mvn clean package -DskipTests
+```
+
+## 🚀 Запуск
+
+### Из командной строки
+
+```bash
+# Запуск приложения
 java -jar target/booking-cinema-0.0.1-SNAPSHOT.jar
+```
 
-# Or use Maven
+Приложение будет доступно по адресу: **http://localhost:8080**
+
+### Из Maven
+
+```bash
 mvn spring-boot:run
 ```
 
-The application will start on `http://localhost:8080`
+## 🏗 Архитектура
 
-## 📖 API Documentation
+### Слои приложения
 
-### Films
+```
+┌─────────────────────────────────────┐
+│      Frontend (HTML/CSS/JS)         │
+├─────────────────────────────────────┤
+│   Spring MVC Controllers            │
+│   (FilmRestController, etc)         │
+├─────────────────────────────────────┤
+│   Service Layer                     │
+│   (FilmService, BookingService)     │
+├─────────────────────────────────────┤
+│   Spring Data JPA Repository        │
+│   (FilmRepository, etc)             │
+├─────────────────────────────────────┤
+│   Database (H2 In-Memory)           │
+└─────────────────────────────────────┘
+```
+
+### Ключевые компоненты
+
+#### 🔐 Безопасность
+- **Spring Security** - аутентификация и авторизация
+- **JWT (JSON Web Tokens)** - токены для аутентификации
+- **Role-Based Access Control (RBAC)** - управление доступом на основе ролей
+
+#### 📱 Frontend
+- **Bootstrap 5.3.3** - адаптивный дизайн
+- **Vanilla JavaScript** - без фреймворков
+- **Современный CSS** - анимации и переходы
+- **LocalStorage** - сохранение токена и данных пользователя
+
+#### 💾 База данных
+- **H2** - встроенная реляционная БД (разработка)
+- **Spring Data JPA** - ORM маппинг
+- **Инициализация** - `data.sql` при старте
+
+## 📡 API
+
+### Публичные эндпоинты (без авторизации)
+
+#### Фильмы
+```
+GET /api/v1/films                    - Список всех фильмов
+GET /api/v1/films?title=Интерстеллар - Поиск по названию
+GET /api/v1/films?genre=Фантастика   - Фильтр по жанру
+GET /api/v1/films/{id}               - Данные конкретного фильма
+```
+
+#### Сеансы
+```
+GET /api/v1/sessions                 - Все сеансы
+GET /api/v1/sessions/{id}            - Конкретный сеанс
+GET /api/v1/sessions/film/{filmId}   - Сеансы для фильма
+```
+
+#### Аутентификация
+```
+POST /api/users/register             - Регистрация
+POST /api/users/login                - Вход
+```
+
+### Защищенные эндпоинты (требует JWT токен)
+
+#### Бронирования
+```
+GET /api/v1/bookings                 - Мои бронирования
+POST /api/v1/bookings                - Создать бронирование
+DELETE /api/v1/bookings/{id}         - Отменить бронирование
+```
+
+#### Администратору (роль ADMIN)
+```
+POST /api/v1/films                   - Создать фильм
+PUT /api/v1/films/{id}               - Обновить фильм
+DELETE /api/v1/films/{id}            - Удалить фильм
+POST /api/v1/sessions                - Создать сеанс
+PUT /api/v1/sessions/{id}            - Обновить сеанс
+DELETE /api/v1/sessions/{id}         - Удалить сеанс
+```
+
+## 🗄️ Структура базы данных
+
+### Таблица `film`
+```sql
+CREATE TABLE film (
+    id BIGINT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,      -- Название фильма
+    genre VARCHAR(100),               -- Жанр
+    duration INT NOT NULL,            -- Длительность в минутах
+    rating DOUBLE                     -- Рейтинг (0-10)
+);
+```
+
+### Таблица `session`
+```sql
+CREATE TABLE session (
+    id BIGINT PRIMARY KEY,
+    film_id BIGINT FOREIGN KEY,       -- Ссылка на фильм
+    start_time TIMESTAMP NOT NULL,    -- Время начала сеанса
+    hall VARCHAR(20) NOT NULL,        -- Номер зала
+    total_seats INT NOT NULL,         -- Всего мест
+    available_seats INT NOT NULL      -- Свободных мест
+);
+```
+
+### Таблица `booking`
+```sql
+CREATE TABLE booking (
+    id BIGINT PRIMARY KEY,
+    user_id BIGINT FOREIGN KEY,       -- Пользователь
+    session_id BIGINT FOREIGN KEY,    -- Сеанс
+    seats VARCHAR(255) NOT NULL,      -- Забронированные места
+    booking_date TIMESTAMP,           -- Дата бронирования
+    status VARCHAR(20)                -- Статус (CONFIRMED/CANCELLED)
+);
+```
+
+### Таблица `users`
+```sql
+CREATE TABLE users (
+    id BIGINT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,   -- Хэшированный пароль (BCrypt)
+    role VARCHAR(20)                  -- Роль (USER/ADMIN)
+);
+```
+
+## 🔐 Аутентификация
+
+### JWT Токен
+
+Токен содержит:
+- **Срок действия**: 24 часа
+- **Секретный ключ**: из переменной окружения или конфигурации
+- **Данные**: username, роль, время создания
+
+### Как получить токен
+
+```javascript
+// Регистрация
+const registerResponse = await fetch('/api/users/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+        username: 'new_user', 
+        password: 'password123' 
+    })
+});
+
+// Вход
+const loginResponse = await fetch('/api/users/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+        username: 'user', 
+        password: 'password' 
+    })
+});
+
+const data = await loginResponse.json();
+const token = data.token;
+
+// Использование токена
+fetch('/api/v1/bookings', {
+    headers: {
+        'Authorization': `Bearer ${token}`
+    }
+});
+```
+
+## 📊 Пример данных
+
+При запуске приложение автоматически загружает:
+- **12 фильмов** с рейтингами (8.3 - 9.2)
+- **12+ сеансов** в разных залах
+- **Тестовые пользователи** для демонстрации
+
+## 🎯 Примеры использования API
+
+### Получить все фильмы
 ```bash
-# Get all films
-curl http://localhost:8080/api/v1/films
+curl -X GET http://localhost:8080/api/v1/films
+```
 
-# Get film by ID
-curl http://localhost:8080/api/v1/films/1
+Ответ:
+```json
+[
+  {
+    "id": 1,
+    "title": "Интерстеллар",
+    "genre": "Научная фантастика",
+    "duration": 169,
+    "rating": 8.6
+  },
+  ...
+]
+```
 
-# Create new film
+### Зарегистрироваться
+```bash
+curl -X POST http://localhost:8080/api/users/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"newuser","password":"pass123"}'
+```
+
+### Получить мои бронирования
+```bash
+curl -X GET http://localhost:8080/api/v1/bookings \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+## 🔧 Конфигурация
+
+### Файл application.properties
+
+```properties
+# Server
+server.port=8080
+server.servlet.context-path=/
+
+# Database
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+# H2 Console
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+
+# JWT
+jwt.secret=your-secret-key-change-in-production
+jwt.expiration=86400000  # 24 hours in ms
+```
+
+## 📁 Структура проекта
+
+```
+src/main/
+├── java/com/rizat/cinema/
+│   ├── CinemaBookingApplication.java  # Главный класс
+│   ├── controller/
+│   │   ├── FilmRestController.java    # REST API для фильмов
+│   │   ├── SessionRestController.java # REST API для сеансов
+│   │   ├── BookingRestController.java # REST API для бронирований
+│   │   └── AuthController.java        # REST API для аутентификации
+│   ├── model/
+│   │   ├── Film.java
+│   │   ├── Session.java
+│   │   ├── Booking.java
+│   │   └── User.java
+│   ├── repository/
+│   │   ├── FilmRepository.java
+│   │   ├── SessionRepository.java
+│   │   ├── BookingRepository.java
+│   │   └── UserRepository.java
+│   ├── service/
+│   │   ├── FilmService.java
+│   │   ├── BookingService.java
+│   │   └── JwtService.java
+│   ├── security/
+│   │   ├── SecurityConfig.java       # Конфигурация безопасности
+│   │   └── JwtAuthenticationFilter.java
+│   └── exception/
+│       └── GlobalExceptionHandler.java
+├── resources/
+│   ├── static/
+│   │   ├── booking.html              # Страница бронирования
+│   │   ├── bookings.html             # История бронирований
+│   │   ├── login.html                # Вход
+│   │   ├── register.html             # Регистрация
+│   │   ├── admin.html                # Админ панель
+│   │   ├── css/
+│   │   │   └── style.css             # Общие стили
+│   │   └── js/
+│   │       └── (скрипты в HTML)
+│   ├── templates/
+│   │   └── index.html                # Главная страница
+│   ├── application.properties        # Конфигурация
+│   └── data.sql                      # Инициализация БД
+└── test/
+    └── java/                         # Тесты
+
+pom.xml                               # Зависимости Maven
+```
+
+## 🚀 Развертывание
+
+### На боевом сервере (Production)
+
+1. **Сменить JWT секретный ключ**
+   ```bash
+   # Генерировать новый ключ
+   openssl rand -base64 32
+   ```
+
+2. **Настроить переменные окружения**
+   ```bash
+   export JWT_SECRET=your-generated-secret-key
+   export DB_URL=jdbc:mysql://host:3306/cinema_booking
+   export DB_USER=db_user
+   export DB_PASSWORD=db_password
+   ```
+
+3. **Использовать постоянную БД** (PostgreSQL/MySQL)
+   ```properties
+   spring.datasource.url=jdbc:postgresql://localhost:5432/cinema
+   spring.jpa.hibernate.ddl-auto=validate
+   ```
+
+4. **Запустить с SSL/TLS**
+   ```bash
+   java -jar booking-cinema.jar \
+     --server.ssl.key-store=keystore.p12 \
+     --server.ssl.key-store-password=password
+   ```
+
+## 🧪 Тестирование
+
+### Тестовые учетные данные
+
+При запуске приложение создает тестовые пользователи:
+
+```
+User (обычный пользователь):
+- Username: user
+- Password: password123
+- Role: USER
+
+Admin (администратор):
+- Username: admin
+- Password: admin123
+- Role: ADMIN
+```
+
+## 📚 Используемые технологии
+
+### Backend
+- **Spring Boot 3.3.4** - основной фреймворк
+- **Spring Security** - безопасность
+- **Spring Data JPA** - работа с БД
+- **Spring Web MVC** - REST API
+- **JJWT 0.12.3** - JWT токены
+- **H2 Database** - встроенная БД
+- **Logback** - логирование
+
+### Frontend
+- **Bootstrap 5.3.3** - CSS фреймворк
+- **Vanilla JavaScript** - скрипты
+- **HTML5** - разметка
+- **CSS3** - стилизация
+
+## 📝 Лицензия
+
+Проект распространяется под лицензией MIT.
+
+---
+
+**Примечание**: Это приложение разработано как демонстрационный проект. Для использования в production требуется дополнительная настройка безопасности, логирования и мониторинга.# Create new film
 curl -X POST http://localhost:8080/api/v1/films \
   -H "Content-Type: application/json" \
   -d '{"title":"New Film","genre":"Action","duration":120}'

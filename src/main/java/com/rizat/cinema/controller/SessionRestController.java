@@ -3,6 +3,7 @@ package com.rizat.cinema.controller;
 import com.rizat.cinema.model.Session;
 import com.rizat.cinema.repository.SessionRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/sessions")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class SessionRestController {
     private final SessionRepository sessionRepository;
 
@@ -39,12 +39,14 @@ public class SessionRestController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Session> createSession(@RequestBody Session session) {
         Objects.requireNonNull(session, "Session cannot be null");
         return ResponseEntity.ok(sessionRepository.save(session));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Session> updateSession(@PathVariable Long id, @RequestBody Session sessionDetails) {
         Objects.requireNonNull(id, "Session ID cannot be null");
         Objects.requireNonNull(sessionDetails, "Session details cannot be null");
@@ -60,6 +62,7 @@ public class SessionRestController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteSession(@PathVariable Long id) {
         Objects.requireNonNull(id, "Session ID cannot be null");
         if (sessionRepository.existsById(id)) {
