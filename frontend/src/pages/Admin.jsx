@@ -1,12 +1,31 @@
-import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
-export default function Admin(){
-  const role = localStorage.getItem('role')
-  if(role !== 'ADMIN') return (<div className="container page"><h2>Доступ запрещён</h2></div>)
+function Admin({ user }) {
+  const navigate = useNavigate()
+
+  if (!user || user.role !== 'ADMIN') {
+    return (
+      <div className="page container">
+        <div className="error">Access denied. Admin only.</div>
+      </div>
+    )
+  }
+
   return (
-    <div className="container page">
-      <h2>Админ панель</h2>
-      <p>Управление фильмами и сессиями (заглушка)</p>
+    <div className="page container">
+      <h1>👨‍💼 Admin Panel</h1>
+      <div className="card">
+        <h2>Dashboard</h2>
+        <p>Admin features coming soon...</p>
+        <ul>
+          <li>📊 View statistics</li>
+          <li>🎬 Manage films</li>
+          <li>🎭 Manage sessions</li>
+          <li>📋 View all bookings</li>
+        </ul>
+      </div>
     </div>
   )
 }
+
+export default Admin

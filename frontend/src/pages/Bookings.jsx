@@ -1,38 +1,42 @@
-import React, {useEffect, useState} from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { api } from '../utils/api'
 
-export default function Bookings(){
-  const navigate = useNavigate()
+function Bookings({ user }) {
   const [bookings, setBookings] = useState([])
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
-  useEffect(()=>{
-    if(!localStorage.getItem('jwtToken')){
+  useEffect(() => {
+    if (!user) {
       navigate('/login')
       return
     }
-    async function load(){
-      // В реальности нужен отдельный endpoint для получения бронирований пользователя
-      // Пока показываем заглушку
-      setBookings([])
-      setLoading(false)
-    }
-    load()
-  },[navigate])
+    api.getUserBookings()
+      .then(setBookings)
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false))
+  }, [user, navigate])
+
+  if (!user) return null
+  if (loading) return <div className="container"><p>Loading...</p></div>
 
   return (
-    <div className="container page">
-      <h2>Мои бронирования</h2>
-      {loading ? (<p>Загрузка...</p>) : bookings.length===0 ? (
-        <p>У вас нет бронирований</p>
+    <div className="page container">
+      <h1>📋 My Bookings</h1>
+      {error && <div className="error">{error}</div>}
+      {bookings.length === 0 ? (
+        <div className="info">No bookings yet. <a href="/booking">Book now!</a></div>
       ) : (
         <div className="grid">
-          {bookings.map(b=> (
-            <div key={b.id} className="card">
-              <h3>Фильм: {b.filmTitle}</h3>
-              <p>Дата: {b.date}</p>
-              <p>Места: {b.seats}</p>
-              <p>Статус: {b.status}</p>
+          {bookings.map(booking => (
+            <div key={booking.id} className="card">
+              <h3>Booking #{booking.id}</h3>
+              <p><strong>Film:</strong> {booking.filmTitle}</p>
+              <p><strong>Session:</strong> Hall {booking.hallNumber} at {booking.time}</p>
+              <p><strong>Seats:</strong> {booking.seatNumbers.join(', ')}</p>
+              <p><strong>Status:</strong> {booking.status}</p>
             </div>
           ))}
         </div>
@@ -40,3 +44,5 @@ export default function Bookings(){
     </div>
   )
 }
+
+export default Bookings

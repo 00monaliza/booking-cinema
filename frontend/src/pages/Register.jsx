@@ -1,44 +1,63 @@
-import React, {useState} from 'react'
-import api from '../utils/api'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { api } from '../utils/api'
 
-export default function Register(){
+function Register({ onRegisterSuccess }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  async function submit(e){
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    setSuccess('')
-    if(password !== confirmPassword){ setError('Пароли не совпадают'); return }
-    try{
-      await api.register({ username, password })
-      setSuccess('Регистрация успешна. Войдите.')
-      setTimeout(()=> navigate('/login'), 1000)
-    }catch(err){ setError(err.message || 'Ошибка регистрации') }
+    setLoading(true)
+
+    try {
+      const data = await api.register(username, password)
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user))
+      onRegisterSuccess(data.user)
+      navigate('/')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <div className="container page form-page">
-      <h2>Регистрация</h2>
-      <form onSubmit={submit} className="card">
+    <div className="page container">
+      <div className="form-card card">
+        <h1>Register</h1>
         {error && <div className="error">{error}</div>}
-        {success && <div className="success">{success}</div>}
-        <label>Имя пользователя
-          <input value={username} onChange={e=>setUsername(e.target.value)} required />
-        </label>
-        <label>Пароль
-          <input type="password" value={password} onChange={e=>setPassword(e.target.value)} required />
-        </label>
-        <label>Подтвердите пароль
-          <input type="password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} required />
-        </label>
-        <button type="submit" className="btn">Зарегистрироваться</button>
-      </form>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="btn" disabled={loading} style={{ width: '100%' }}>
+            {loading ? 'Registering...' : 'Register'}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }
+
+export default Register

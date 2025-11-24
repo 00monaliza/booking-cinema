@@ -1,24 +1,65 @@
-const API_BASE_V1 = '/api/v1'
-const API_BASE_USERS = '/api/users'
+const BASE_URL = '/api/v1'
+const AUTH_URL = '/api/users'
 
-async function request(path, options = {}){
-  const headers = options.headers || {}
-  headers['Content-Type'] = 'application/json'
-  const token = localStorage.getItem('jwtToken')
-  if(token) headers['Authorization'] = `Bearer ${token}`
+export const api = {
+  async login(username, password) {
+    const res = await fetch(`${AUTH_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    })
+    if (!res.ok) throw new Error('Login failed')
+    return res.json()
+  },
 
-  const res = await fetch(path, {...options, headers})
-  if(res.status === 204) return null
-  const json = await res.json().catch(()=>null)
-  if(!res.ok) throw new Error(json?.message || 'API error')
-  return json
-}
+  async register(username, password) {
+    const res = await fetch(`${AUTH_URL}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    })
+    if (!res.ok) throw new Error('Registration failed')
+    return res.json()
+  },
 
-export default {
-  login: (body) => request(`${API_BASE_USERS}/login`, { method: 'POST', body: JSON.stringify(body) }),
-  register: (body) => request(`${API_BASE_USERS}/register`, { method: 'POST', body: JSON.stringify(body) }),
-  get: (p) => request(`${API_BASE_V1}${p}`, { method: 'GET' }),
-  post: (p, body) => request(`${API_BASE_V1}${p}`, { method: 'POST', body: JSON.stringify(body) }),
-  put: (p, body) => request(`${API_BASE_V1}${p}`, { method: 'PUT', body: JSON.stringify(body) }),
-  delete: (p) => request(`${API_BASE_V1}${p}`, { method: 'DELETE' })
+  async getFilms() {
+    const res = await fetch(`${BASE_URL}/films`)
+    if (!res.ok) throw new Error('Failed to fetch films')
+    return res.json()
+  },
+
+  async getSessionsByFilm(filmId) {
+    const res = await fetch(`${BASE_URL}/sessions/film/${filmId}`)
+    if (!res.ok) throw new Error('Failed to fetch sessions')
+    return res.json()
+  },
+
+  async getSessions() {
+    const res = await fetch(`${BASE_URL}/sessions`)
+    if (!res.ok) throw new Error('Failed to fetch sessions')
+    return res.json()
+  },
+
+  async bookSeats(sessionId, seatNumbers) {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`${BASE_URL}/bookings`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ sessionId, seatNumbers })
+    })
+    if (!res.ok) throw new Error('Booking failed')
+    return res.json()
+  },
+
+  async getUserBookings() {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`${BASE_URL}/bookings/user`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (!res.ok) throw new Error('Failed to fetch bookings')
+    return res.json()
+  }
 }

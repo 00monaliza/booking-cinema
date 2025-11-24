@@ -1,146 +1,129 @@
-import React, {useEffect, useState} from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import api from '../utils/api'
+import { api } from '../utils/api'
 
-export default function Booking(){
-  const navigate = useNavigate()
+function Booking({ user }) {
+  const [step, setStep] = useState(1)
   const [films, setFilms] = useState([])
-  const [selectedFilm, setSelectedFilm] = useState(null)
   const [sessions, setSessions] = useState([])
+  const [selectedFilm, setSelectedFilm] = useState(null)
   const [selectedSession, setSelectedSession] = useState(null)
-  const [seats, setSeats] = useState([])
   const [selectedSeats, setSelectedSeats] = useState([])
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
-  useEffect(()=>{
-    if(!localStorage.getItem('jwtToken')){
+  useEffect(() => {
+    if (!user) {
       navigate('/login')
       return
     }
-    async function load(){
-      try{
-        const f = await api.get('/films')
-        setFilms(f||[])
-      }catch(e){ console.error(e) }
-    }
-    load()
-  },[navigate])
+    api.getFilms()
+      .then(setFilms)
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false))
+  }, [user, navigate])
 
-  async function selectFilm(filmId){
+  const handleSelectFilm = async (filmId) => {
     setSelectedFilm(filmId)
-    setSelectedSession(null)
-    setSeats([])
+    try {
+      const sessions = await api.getSessionsByFilm(filmId)
+      setSessions(sessions)
+      setStep(2)
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  const handleSelectSession = (sessionId) => {
+    setSelectedSession(sessionId)
     setSelectedSeats([])
-    try{
-      const s = await api.get(`/sessions/film/${filmId}`)
-      setSessions(s||[])
-    }catch(e){ console.error(e) }
+    setStep(3)
   }
 
-  function selectSession(session){
-    setSelectedSession(session)
-    const totalSeats = session.totalSeats || 20
-    setSeats(Array.from({length: totalSeats}, (_, i)=> ({id: i+1, booked: Math.random() < 0.3})))
-  }
-
-  function toggleSeat(seatId){
-    setSelectedSeats(prev=> 
-      prev.includes(seatId) ? prev.filter(s=> s!==seatId) : [...prev, seatId]
+  const toggleSeat = (seatNum) => {
+    setSelectedSeats(prev =>
+      prev.includes(seatNum) ? prev.filter(s => s !== seatNum) : [...prev, seatNum]
     )
   }
 
-  async function confirmBooking(){
-    if(!selectedSession || selectedSeats.length===0){
-      setError('Выберите сеанс и места')
+  const handleConfirmBooking = async () => {
+    if (selectedSeats.length === 0) {
+      setError('Please select at least one seat')
       return
     }
-    setLoading(true)
-    setError('')
-    try{
-      const booking = {
-        sessionId: selectedSession.id,
-        seats: selectedSeats.join(','),
-        status: 'CONFIRMED'
-      }
-      await api.post('/bookings', booking)
-      alert('Бронирование успешно!')
+    try {
+      await api.bookSeats(selectedSession, selectedSeats)
       navigate('/bookings')
-    }catch(err){
+    } catch (err) {
       setError(err.message)
-    }finally{
-      setLoading(false)
     }
   }
 
+  if (!user) return null
+  if (loading) return <div className="container"><p>Loading...</p></div>
+
   return (
-    <div className="container page">
-      <h2>Бронирование билетов</h2>
+    <div className="page container">
+      <h1>🎫 Book Your Tickets</h1>
       {error && <div className="error">{error}</div>}
-      
-      <div className="booking-flow">
+
+      {step === 1 && (
         <div className="step">
-          <h3>Шаг 1: Выберите фильм</h3>
+          <h3>Step 1: Select Film</h3>
           <div className="grid">
-            {films.map(f=> (
-              <button
-                key={f.id}
-                className={`card ${selectedFilm===f.id ? 'selected' : ''}`}
-                onClick={()=> selectFilm(f.id)}
-              >
-                <h4>{f.title}</h4>
-                <p>⭐ {f.rating}</p>
-              </button>
+            {films.map(film => (
+              <div key={film.id} className="card" onClick={() => handleSelectFilm(film.id)} style={{ cursor: 'pointer' }}>
+                <h3>{film.title}</h3>
+                <p>{film.genre}</p>
+                <p>⭐ {film.rating}</p>
+                <button className="btn">Select</button>
+              </div>
             ))}
           </div>
         </div>
+      )}
 
-        {selectedFilm && (
-          <div className="step">
-            <h3>Шаг 2: Выберите сеанс</h3>
-            <div className="grid">
-              {sessions.length===0 && <p>Нет доступных сеансов</p>}
-              {sessions.map(s=> (
-                <button
-                  key={s.id}
-                  className={`card ${selectedSession?.id===s.id ? 'selected' : ''}`}
-                  onClick={()=> selectSession(s)}
-                >
-                  <h4>{s.startTime}</h4>
-                  <p>Зал {s.hall}</p>
-                  <p>Свободных мест: {s.availableSeats}/{s.totalSeats}</p>
-                </button>
-              ))}
-            </div>
+      {step === 2 && (
+        <div className="step">
+          <h3>Step 2: Select Session</h3>
+          <button className="btn" onClick={() => setStep(1)}>Back</button>
+          <div style={{ marginTop: '20px' }}>
+            {sessions.map(session => (
+              <div key={session.id} className="card" onClick={() => handleSelectSession(session.id)} style={{ cursor: 'pointer', marginBottom: '10px' }}>
+                <h3>Hall {session.hallNumber}</h3>
+                <p>Time: {session.time}</p>
+                <p>Available seats: {session.availableSeats}</p>
+                <button className="btn">Select</button>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
+      )}
 
-        {selectedSession && (
-          <div className="step">
-            <h3>Шаг 3: Выберите места</h3>
-            <div className="seats-grid">
-              {seats.map(seat=> (
-                <button
-                  key={seat.id}
-                  className={`seat ${seat.booked ? 'booked' : selectedSeats.includes(seat.id) ? 'selected' : ''}`}
-                  onClick={()=> !seat.booked && toggleSeat(seat.id)}
-                  disabled={seat.booked}
-                >
-                  {seat.id}
-                </button>
-              ))}
-            </div>
-            <p>Выбрано мест: {selectedSeats.length}</p>
-            <button 
-              className="btn" 
-              onClick={confirmBooking} 
-              disabled={loading || selectedSeats.length===0}
-            >
-              {loading ? 'Подтверждение...' : 'Подтвердить бронирование'}
-            </button>
+      {step === 3 && (
+        <div className="step">
+          <h3>Step 3: Select Seats</h3>
+          <button className="btn" onClick={() => setStep(2)}>Back</button>
+          <p style={{ marginTop: '20px' }}>Selected: {selectedSeats.join(', ') || 'None'}</p>
+          <div className="seats-grid">
+            {Array.from({ length: 50 }, (_, i) => i + 1).map(num => (
+              <button
+                key={num}
+                className={`seat ${selectedSeats.includes(num) ? 'selected' : ''}`}
+                onClick={() => toggleSeat(num)}
+              >
+                {num}
+              </button>
+            ))}
           </div>
-        )}
-      </div>
+          <button className="btn" onClick={handleConfirmBooking} style={{ marginTop: '20px' }}>
+            Confirm Booking ({selectedSeats.length} seats)
+          </button>
+        </div>
+      )}
     </div>
   )
 }
+
+export default Booking
