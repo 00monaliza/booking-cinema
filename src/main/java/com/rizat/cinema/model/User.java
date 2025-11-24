@@ -12,10 +12,10 @@ public class User {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = true)
     private String email;
 
-    @Column
+    @Column(nullable = true)
     private String phone;
 
     @Column(nullable = false)

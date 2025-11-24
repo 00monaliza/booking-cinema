@@ -1,0 +1,258 @@
+/* Sessions Page Styles */
+.sessions-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 20px 0;
+}
+
+.sessions-page .container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.back-btn {
+  background: #e50914;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 20px;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: #c40812;
+  transform: translateX(-3px);
+}
+
+/* Film Header */
+.film-header {
+  background: white;
+  border-radius: 10px;
+  padding: 30px;
+  margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  align-items: start;
+}
+
+.film-poster-large {
+  position: relative;
+  width: 150px;
+  height: 200px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.poster-icon-large {
+  font-size: 3rem;
+  opacity: 0.7;
+}
+
+.rating-large {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f5a623;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.film-details h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.film-details .genre {
+  color: #e50914;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.film-details .duration {
+  color: #666;
+  font-size: 1rem;
+}
+
+/* Dates Selector */
+.dates-selector {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dates-selector h2 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.dates-list {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.date-btn {
+  padding: 10px 16px;
+  background: #f5f5f5;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.date-btn:hover {
+  border-color: #e50914;
+  background: #fff;
+}
+
+.date-btn.active {
+  background: #e50914;
+  color: white;
+  border-color: #e50914;
+}
+
+/* Sessions Container */
+.sessions-container {
+  background: white;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sessions-container h2 {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.no-sessions {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.no-sessions p {
+  font-size: 1.1rem;
+  color: #999;
+}
+
+/* Sessions Grid */
+.sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.session-card {
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.session-card:hover {
+  border-color: #e50914;
+  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.1);
+  transform: translateY(-3px);
+}
+
+.session-time {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.session-details {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.session-details p {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 5px;
+}
+
+.available-seats {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.available-seats strong {
+  font-size: 1.1rem;
+}
+
+.buy-btn {
+  width: 100%;
+  padding: 12px;
+  background: #e50914;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.buy-btn:hover {
+  background: #c40812;
+  transform: scale(1.02);
+}
+
+.buy-btn:active {
+  transform: scale(0.98);
+}
+
+.error-message {
+  background: #fee;
+  color: #a94442;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .film-header {
+    grid-template-columns: 1fr;
+  }
+  
+  .sessions-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  
+  .dates-list {
+    flex-wrap: wrap;
+  }
+}

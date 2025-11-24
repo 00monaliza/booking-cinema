@@ -12,20 +12,19 @@ function NavBar({ user, onLogout }) {
     <nav className="nav">
       <div className="container">
         <div className="nav-inner">
-          <Link to="/" className="brand">🎬 Cinema Booking</Link>
+          <Link to="/" className="brand">🎬 CinemaBook</Link>
           <div className="nav-buttons">
             {user ? (
               <>
-                <span style={{ color: 'white', alignSelf: 'center' }}>Welcome, {user.username}!</span>
-                <Link to="/booking" className="btn">Book Ticket</Link>
-                <Link to="/bookings" className="btn">My Bookings</Link>
-                {user.role === 'ADMIN' && <Link to="/admin" className="btn">Admin</Link>}
-                <button className="btn" onClick={handleLogout}>Logout</button>
+                <span className="nav-user-info">👤 {user.username}</span>
+                <Link to="/my-bookings" className="btn">Мои билеты</Link>
+                {user.role === 'ADMIN' && <Link to="/admin" className="btn">Админ</Link>}
+                <button className="btn" onClick={handleLogout}>Выход</button>
               </>
             ) : (
               <>
-                <Link to="/login" className="btn">Login</Link>
-                <Link to="/register" className="btn">Register</Link>
+                <Link to="/login" className="btn">Вход</Link>
+                <Link to="/register" className="btn">Регистрация</Link>
               </>
             )}
           </div>

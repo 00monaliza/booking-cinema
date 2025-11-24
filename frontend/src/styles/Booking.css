@@ -1,0 +1,279 @@
+/* Booking Page Styles */
+.booking-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 20px 0;
+}
+
+.booking-page .container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.back-btn {
+  background: #e50914;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 20px;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: #c40812;
+  transform: translateX(-3px);
+}
+
+.booking-layout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 30px;
+}
+
+/* Seats Section */
+.seats-section {
+  background: white;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.seats-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.screen {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(to bottom, #999 0%, #666 100%);
+  color: white;
+  border-radius: 50px 50px 0 0;
+  margin-bottom: 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.seats-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 10px;
+  margin-bottom: 30px;
+  max-width: 600px;
+}
+
+.seat {
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  color: #666;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.seat:hover:not(:disabled) {
+  border-color: #e50914;
+  background: #ffe5e5;
+}
+
+.seat.selected {
+  background: #e50914;
+  color: white;
+  border-color: #e50914;
+}
+
+.seat.booked {
+  background: #ccc;
+  color: #999;
+  border-color: #999;
+  cursor: not-allowed;
+}
+
+.seat:disabled {
+  cursor: not-allowed;
+}
+
+.legend {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-item .seat {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  font-size: 0;
+  cursor: default;
+}
+
+.legend-item .seat.available {
+  background: white;
+  border-color: #ddd;
+}
+
+.legend-item .seat.selected {
+  background: #e50914;
+  border-color: #e50914;
+}
+
+.legend-item .seat.booked {
+  background: #ccc;
+  border-color: #999;
+}
+
+.legend-item span {
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.error-message {
+  background: #fee;
+  color: #a94442;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+/* Booking Summary */
+.booking-summary {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.booking-summary h3 {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: #333;
+  border-bottom: 2px solid #e50914;
+  padding-bottom: 12px;
+}
+
+.summary-details {
+  margin-bottom: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+}
+
+.detail-row span {
+  color: #666;
+}
+
+.detail-row strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.total-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 12px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.total-price span {
+  color: #666;
+}
+
+.total-price strong {
+  color: #e50914;
+  font-size: 1.3rem;
+}
+
+.confirm-btn {
+  width: 100%;
+  padding: 14px;
+  background: #e50914;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background: #c40812;
+  transform: scale(1.02);
+}
+
+.confirm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1024px) {
+  .booking-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .booking-summary {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .seats-section {
+    padding: 20px;
+  }
+  
+  .seats-grid {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+  }
+  
+  .booking-summary {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .seats-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  .legend {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
