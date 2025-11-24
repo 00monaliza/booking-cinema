@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/sessions")
@@ -24,6 +25,7 @@ public class SessionRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Session> getSessionById(@PathVariable Long id) {
+        Objects.requireNonNull(id, "Session ID cannot be null");
         return sessionRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -31,17 +33,21 @@ public class SessionRestController {
 
     @GetMapping("/film/{filmId}")
     public ResponseEntity<List<Session>> getSessionsByFilmId(@PathVariable Long filmId) {
+        Objects.requireNonNull(filmId, "Film ID cannot be null");
         List<Session> sessions = sessionRepository.findByFilmId(filmId);
         return ResponseEntity.ok(sessions);
     }
 
     @PostMapping
     public ResponseEntity<Session> createSession(@RequestBody Session session) {
+        Objects.requireNonNull(session, "Session cannot be null");
         return ResponseEntity.ok(sessionRepository.save(session));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Session> updateSession(@PathVariable Long id, @RequestBody Session sessionDetails) {
+        Objects.requireNonNull(id, "Session ID cannot be null");
+        Objects.requireNonNull(sessionDetails, "Session details cannot be null");
         return sessionRepository.findById(id)
                 .map(session -> {
                     session.setStartTime(sessionDetails.getStartTime());
@@ -55,6 +61,7 @@ public class SessionRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSession(@PathVariable Long id) {
+        Objects.requireNonNull(id, "Session ID cannot be null");
         if (sessionRepository.existsById(id)) {
             sessionRepository.deleteById(id);
             return ResponseEntity.noContent().build();

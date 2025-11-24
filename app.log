@@ -37,3 +37,6 @@ WARNING: Restricted methods will be blocked in a future release unless native ac
 2025-11-24T08:43:28.691+05:00  INFO 32206 --- [Cinema Booking System] [           main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
 2025-11-24T08:43:28.841+05:00  INFO 32206 --- [Cinema Booking System] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
 2025-11-24T08:43:28.848+05:00  INFO 32206 --- [Cinema Booking System] [           main] c.rizat.cinema.CinemaBookingApplication  : Started CinemaBookingApplication in 1.519 seconds (process running for 1.683)
+2025-11-24T08:44:08.390+05:00  INFO 32206 --- [Cinema Booking System] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-24T08:44:08.390+05:00  INFO 32206 --- [Cinema Booking System] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-11-24T08:44:08.391+05:00  INFO 32206 --- [Cinema Booking System] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
