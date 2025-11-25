@@ -15,15 +15,19 @@ function Sessions() {
   useEffect(() => {
     Promise.all([
       api.getFilms(),
-      api.getSessionsByFilm(filmId)
+      api.getSessions()
     ])
-      .then(([films, sessionsList]) => {
-        const currentFilm = films.find(f => f.id == filmId)
+      .then(([films, allSessions]) => {
+        // Filter sessions for this film
+        const filmSessions = allSessions.filter(s => s.film?.id == filmId)
+        const currentFilm = films.find(f => f.id == filmId) || filmSessions[0]?.film
+        
         setFilm(currentFilm)
-        setSessions(sessionsList)
+        setSessions(filmSessions)
+        
         // Set first date as selected
-        if (sessionsList.length > 0) {
-          const firstDate = sessionsList[0].date || new Date().toISOString().split('T')[0]
+        if (filmSessions.length > 0) {
+          const firstDate = new Date(filmSessions[0].startTime).toISOString().split('T')[0]
           setSelectedDate(firstDate)
         }
       })
@@ -32,11 +36,11 @@ function Sessions() {
   }, [filmId])
 
   const filteredSessions = sessions.filter(s => {
-    const sessionDate = s.date || new Date().toISOString().split('T')[0]
+    const sessionDate = new Date(s.startTime).toISOString().split('T')[0]
     return !selectedDate || sessionDate === selectedDate
   })
 
-  const uniqueDates = [...new Set(sessions.map(s => s.date || new Date().toISOString().split('T')[0]))]
+  const uniqueDates = [...new Set(sessions.map(s => new Date(s.startTime).toISOString().split('T')[0]))]
 
   const handleSelectSession = (sessionId) => {
     navigate(`/booking/${sessionId}`)
@@ -111,11 +115,13 @@ function Sessions() {
             <div className="sessions-grid">
               {filteredSessions.map(session => (
                 <div key={session.id} className="session-card">
-                  <div className="session-time">{session.time}</div>
+                  <div className="session-time">
+                    {new Date(session.startTime).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                  </div>
                   <div className="session-details">
-                    <p>Зал {session.hallNumber}</p>
+                    <p>{session.hall}</p>
                     <p className="available-seats">
-                      Свободных мест: <strong>{session.availableSeats || 50}</strong>
+                      Свободных мест: <strong>{session.availableSeats}</strong>
                     </p>
                   </div>
                   <button

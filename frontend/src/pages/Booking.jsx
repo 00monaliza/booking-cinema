@@ -24,12 +24,25 @@ function Booking({ user }) {
       return
     }
 
-    api.getSessions()
-      .then(sessions => {
-        const current = sessions.find(s => s.id == sessionId)
+    Promise.all([
+      api.getSessions(),
+      api.getBookedSeats(sessionId)
+    ])
+      .then(([sessions, bookings]) => {
+        const current = sessions.find(s => String(s.id) === String(sessionId))
+        if (!current) {
+          setError('Сеанс не найден')
+        }
         setSession(current)
+        
+        // Extract all booked seats from bookings
+        const booked = bookings.flatMap(b => b.seatNumbers || [])
+        setBookedSeats(booked)
       })
-      .catch(err => setError(err.message))
+      .catch(err => {
+        console.error('Error loading data:', err)
+        setError(err.message)
+      })
       .finally(() => setLoading(false))
   }, [sessionId, user, navigate])
 
@@ -50,10 +63,13 @@ function Booking({ user }) {
     }
 
     setProcessing(true)
+    setError('')
+    
     try {
       await api.bookSeats(sessionId, selectedSeats)
       navigate('/my-bookings')
     } catch (err) {
+      console.error('Booking error:', err)
       setError(err.message || 'Ошибка при бронировании')
     } finally {
       setProcessing(false)
@@ -128,11 +144,11 @@ function Booking({ user }) {
             <div className="summary-details">
               <div className="detail-row">
                 <span>Сеанс:</span>
-                <strong>{session.time}</strong>
+                <strong>{session.startTime ? new Date(session.startTime).toLocaleTimeString() : 'N/A'}</strong>
               </div>
               <div className="detail-row">
                 <span>Зал:</span>
-                <strong>{session.hallNumber}</strong>
+                <strong>{session.hall || 'N/A'}</strong>
               </div>
               <div className="detail-row">
                 <span>Выбранные места:</span>

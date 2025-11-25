@@ -3,63 +3,149 @@ const AUTH_URL = '/api/users'
 
 export const api = {
   async login(username, password) {
-    const res = await fetch(`${AUTH_URL}/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    })
-    if (!res.ok) throw new Error('Login failed')
-    return res.json()
+    try {
+      const res = await fetch(`${AUTH_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      })
+      
+      const data = await res.json()
+      
+      if (!res.ok) {
+        throw new Error(data.error || data.details || 'Login failed')
+      }
+      
+      // API возвращает { token, username, role }
+      // Преобразуем в { token, user: { username, role } }
+      return {
+        token: data.token,
+        user: {
+          username: data.username,
+          role: data.role
+        }
+      }
+    } catch (err) {
+      console.error('Login error:', err)
+      throw err
+    }
   },
 
   async register(username, password) {
-    const res = await fetch(`${AUTH_URL}/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    })
-    if (!res.ok) throw new Error('Registration failed')
-    return res.json()
+    try {
+      const res = await fetch(`${AUTH_URL}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      })
+      
+      const data = await res.json()
+      
+      if (!res.ok) {
+        throw new Error(data.error || data.details || 'Registration failed')
+      }
+      
+      // API возвращает { token, username, role }
+      // Преобразуем в { token, user: { username, role } }
+      return {
+        token: data.token,
+        user: {
+          username: data.username,
+          role: data.role
+        }
+      }
+    } catch (err) {
+      console.error('Register error:', err)
+      throw err
+    }
   },
 
   async getFilms() {
-    const res = await fetch(`${BASE_URL}/films`)
-    if (!res.ok) throw new Error('Failed to fetch films')
-    return res.json()
+    try {
+      const res = await fetch(`${BASE_URL}/films`)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch films')
+      return data
+    } catch (err) {
+      console.error('Get films error:', err)
+      throw err
+    }
   },
 
   async getSessionsByFilm(filmId) {
-    const res = await fetch(`${BASE_URL}/sessions/film/${filmId}`)
-    if (!res.ok) throw new Error('Failed to fetch sessions')
-    return res.json()
+    try {
+      const res = await fetch(`${BASE_URL}/sessions/film/${filmId}`)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch sessions')
+      return data
+    } catch (err) {
+      console.error('Get sessions error:', err)
+      throw err
+    }
   },
 
   async getSessions() {
-    const res = await fetch(`${BASE_URL}/sessions`)
-    if (!res.ok) throw new Error('Failed to fetch sessions')
-    return res.json()
+    try {
+      const res = await fetch(`${BASE_URL}/sessions`)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch sessions')
+      return data
+    } catch (err) {
+      console.error('Get sessions error:', err)
+      throw err
+    }
+  },
+
+  async getBookedSeats(sessionId) {
+    try {
+      const res = await fetch(`${BASE_URL}/bookings/session/${sessionId}`)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch booked seats')
+      return data
+    } catch (err) {
+      console.error('Get booked seats error:', err)
+      throw err
+    }
   },
 
   async bookSeats(sessionId, seatNumbers) {
-    const token = localStorage.getItem('token')
-    const res = await fetch(`${BASE_URL}/bookings`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ sessionId, seatNumbers })
-    })
-    if (!res.ok) throw new Error('Booking failed')
-    return res.json()
+    try {
+      const token = localStorage.getItem('token')
+      if (!token) throw new Error('Not authenticated')
+      
+      const res = await fetch(`${BASE_URL}/bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ sessionId, seatNumbers })
+      })
+      
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Booking failed')
+      return data
+    } catch (err) {
+      console.error('Booking error:', err)
+      throw err
+    }
   },
 
   async getUserBookings() {
-    const token = localStorage.getItem('token')
-    const res = await fetch(`${BASE_URL}/bookings/user`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    if (!res.ok) throw new Error('Failed to fetch bookings')
-    return res.json()
+    try {
+      const token = localStorage.getItem('token')
+      if (!token) throw new Error('Not authenticated')
+      
+      const res = await fetch(`${BASE_URL}/bookings/user`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch bookings')
+      return data
+    } catch (err) {
+      console.error('Get bookings error:', err)
+      throw err
+    }
   }
 }

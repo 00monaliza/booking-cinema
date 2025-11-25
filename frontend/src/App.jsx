@@ -7,6 +7,7 @@ import Sessions from './pages/Sessions'
 import Booking from './pages/Booking'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import MyBookings from './pages/MyBookings'
 import Bookings from './pages/Bookings'
 import Admin from './pages/Admin'
 import './styles/App.css'
@@ -49,7 +50,8 @@ function App() {
             <Route path="/booking/:sessionId" element={<Booking user={user} />} />
             <Route path="/login" element={<Login onLoginSuccess={(u) => setUser(u)} />} />
             <Route path="/register" element={<Register onRegisterSuccess={(u) => setUser(u)} />} />
-            <Route path="/my-bookings" element={<Bookings user={user} />} />
+            <Route path="/my-bookings" element={<MyBookings user={user} />} />
+            <Route path="/bookings" element={<Bookings user={user} />} />
             <Route path="/admin" element={<Admin user={user} />} />
           </Routes>
         </main>
